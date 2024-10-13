@@ -123,6 +123,10 @@ class VideoRatingModel(nn.Module):
 
 # Set device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+if torch.cuda.is_available():
+    print("CUDA is available. Using GPU for computations.")
+else:
+    print("CUDA is not available. Using CPU for computations.")
 
 # Hyperparameters
 input_frames = 3  # Number of frames to input to the model (set to 3)
@@ -193,5 +197,5 @@ for epoch in range(num_epochs):
 
 # Save results to CSV
 results_df = pd.DataFrame(results, columns=['headshots', 'shots_hit', 'shots_missed', 'shots_fired', 'crosshair_placement', 'spray_control', 'accuracy'])
-results_df.to_csv('video_rating_actual_results.csv', index=False)
-print("Results saved to video_rating_actual_results.csv")
+results_df.to_csv('./gameplay-insights/gameplay_stats.csv', index=False)
+print("Results saved to gameplay-insights/gameplay_stats.csv")
