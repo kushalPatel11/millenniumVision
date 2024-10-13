@@ -41,7 +41,7 @@ const Nav = ({ onLogin }: { onLogin: () => void }) => {  // Accept onLogin in Na
         className="flex items-center gap-1 text-s text-black bg-yellow-400 hover:bg-yellow-500 rounded-full px-4 py-3 shadow-lg transition-all duration-300"
         style={{ fontFamily: 'PS2' }}
       >
-        Analize Gameplay
+        Analyze Gameplay
       </button>
 
     </nav>
@@ -167,18 +167,18 @@ const Schedule = () => {
       >
         Millennium Vision
       </motion.h1>
-      <ScheduleItem title="NG-21" date="Dec 9th" location="Florida" />
-      <ScheduleItem title="Starlink" date="Dec 20th" location="Texas" />
-      <ScheduleItem title="Starlink" date="Jan 13th" location="Florida" />
-      <ScheduleItem title="Turksat 6A" date="Feb 22nd" location="Florida" />
-      <ScheduleItem title="NROL-186" date="Mar 1st" location="California" />
-      <ScheduleItem title="GOES-U" date="Mar 8th" location="California" />
-      <ScheduleItem title="ASTRA 1P" date="Apr 8th" location="Texas" />
+      <ScheduleItem title="SHOTS FIRED" count="29" />
+      <ScheduleItem title="SHOTS HIT"  count="20" />
+      <ScheduleItem title="HEADSHOTS"  count="7" />
+      <ScheduleItem title="SHOTS MISSED"  count="9" />
+      <ScheduleItem title="AIM ACCURACY"  count="6.8" />
+      <ScheduleItem title="RECOILE CONTROL "  count="8" />
+      <ScheduleItem title="OVERALL GAMEPLAY"  count="8" />
     </section>
   );
 };
 
-const ScheduleItem = ({ title, date, location }: { title: any, date: any, location: any }) => {
+const ScheduleItem = ({ title, count }: { title: any, count: any }) => {
   return (
     <motion.div
       initial={{ y: 48, opacity: 0 }}
@@ -188,11 +188,9 @@ const ScheduleItem = ({ title, date, location }: { title: any, date: any, locati
     >
       <div>
         <p className="mb-1.5 text-xl text-zinc-50">{title}</p>
-        <p className="text-sm uppercase text-zinc-400">{date}</p>
       </div>
-      <div className="flex items-center gap-1 text-zinc-400">
-        <FiMapPin />
-        <p className="text-sm">{location}</p>
+      <div className="mb-1.5 text-xl text-zinc-50">
+        <p className="text-sm">{count}</p>
       </div>
     </motion.div>
   );

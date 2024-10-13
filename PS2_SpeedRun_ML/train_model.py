@@ -89,6 +89,32 @@ class VideoDataset(Dataset):
             frames = frames[:self.input_frames]  # Select first `input_frames`
 
         return frames, self.labels[idx]
+    
+    # Method to extract features from a single video
+    def extract_features_from_single_video(self, video_path):
+        cap = cv2.VideoCapture(video_path)
+        frames = []
+        to_tensor = transforms.ToTensor()
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            frame = cv2.resize(frame, (input_width, input_height))
+            frame = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))  # Convert to RGB and PIL format
+            frame = to_tensor(frame)
+            frames.append(frame)
+
+        cap.release()
+
+        frames = torch.stack(frames)
+        if frames.size(0) < self.input_frames:
+            padding = (0, 0, 0, 0, 0, self.input_frames - frames.size(0))
+            frames = F.pad(frames, padding, "constant", 0)
+        else:
+            frames = frames[:self.input_frames]
+
+        return frames
 
 
 # Define the model with dropout to prevent overfitting
@@ -195,7 +221,34 @@ for epoch in range(num_epochs):
             outputs = model(videos).detach().cpu().numpy()
             results.extend(outputs)
 
+def test_single_video(model, video_path):
+    model.eval()
+    with torch.no_grad():
+        dataset = VideoDataset(base_folder='Test_Dataset', input_frames=input_frames)
+        video_frames = dataset.extract_features_from_single_video(video_path)
+        video_frames = video_frames.unsqueeze(0).to(device)  # Add batch dimension
+
+        output = model(video_frames)
+        # Output insights
+    print("Predicted insights for the single video:")
+    print(f"Headshots: {output[0][0]:.2f}")
+    print(f"Shots Hit: {output[0][1]:.2f}")
+    print(f"Shots Missed: {output[0][2]:.2f}")
+    print(f"Shots Fired: {output[0][3]:.2f}")
+    print(f"Crosshair Placement: {output[0][4]:.2f}")
+    print(f"Spray Control: {output[0][5]:.2f}")
+    print(f"Accuracy: {output[0][6]:.2f}")
+
+    single_video_path = './Test_Dataset/Mixed.mp4'
+    test_single_video(model, single_video_path)
+
 # Save results to CSV
 results_df = pd.DataFrame(results, columns=['headshots', 'shots_hit', 'shots_missed', 'shots_fired', 'crosshair_placement', 'spray_control', 'accuracy'])
 results_df.to_csv('./gameplay-insights/gameplay_stats.csv', index=False)
 print("Results saved to gameplay-insights/gameplay_stats.csv")
+
+
+
+# Test the model with a single video file
+single_video_path = './Test_Dataset/Mixed.mp4'
+test_single_video(model, single_video_path)
