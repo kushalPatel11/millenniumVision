@@ -1,0 +1,55 @@
+body {
+  background-color: #000000;
+  font-family: 'Arial', sans-serif;
+  color: #ffffff;
+}
+
+.container {
+  text-align: center;
+  padding: 2rem;
+  color: #ffffff;
+}
+
+.ps2-logo {
+  font-size: 2rem;
+  color: #ff0000; /* PS2 red */
+  margin-bottom: 1rem;
+}
+
+.button {
+  background-color: #ffcc00; /* PS2 yellow */
+  border: none;
+  color: #000000;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 1rem;
+}
+
+.button:hover {
+  background-color: #00a3e8; /* PS2 blue */
+}
+
+input[type="text"], input[type="password"] {
+  background-color: #ffffff;
+  color: #000000;
+  padding: 0.75rem;
+  border: 2px solid #00a3e8;
+  border-radius: 5px;
+  width: 50%;
+  margin: 1rem 0;
+}
+
+.loading-icon {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background-color: #ff0000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
