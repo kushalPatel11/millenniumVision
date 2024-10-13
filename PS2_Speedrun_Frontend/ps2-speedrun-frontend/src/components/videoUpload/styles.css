@@ -1,0 +1,49 @@
+/* src/styles.css */
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px 20px;
+    color: white;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.ps2-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.username {
+    font-size: 1rem;
+}
+
+.upload-section {
+    margin-top: 20px;
+}
+
+.button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.loading-icon {
+    margin-top: 10px;
+}

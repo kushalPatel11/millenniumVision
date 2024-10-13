@@ -1,8 +1,9 @@
 // src/App.tsx
 import React, { useState } from 'react';
 import './App.css';
-import Login from './components/login';
-import VideoUpload from './components/videoUpload';
+import './tailwind.css';
+import { SmoothScrollHero } from './components/SmoothScrollHero';
+import VideoUpload from './components/videoUpload/videoUpload';
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -13,8 +14,12 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      {/* {!isLoggedIn ? <Login onLogin={handleLogin} /> : */}
-       <VideoUpload />
+      {!isLoggedIn ? (
+        <SmoothScrollHero onLogin={handleLogin} />  /* Pass the handleLogin function */
+      ) : (
+        <VideoUpload />
+      )
+      }
     </div>
   );
 };

@@ -53,3 +53,11 @@ input[type="text"], input[type="password"] {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+@font-face {
+  font-family: 'PS2';
+  src: url('../public/fonts/PS2.ttf') format('truetype');
+  src: url('../public/fonts/PS2.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
