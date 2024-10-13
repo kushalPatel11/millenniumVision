@@ -11,38 +11,50 @@ import math
 
 # Define the dataset class
 class VideoDataset(Dataset):
-    def __init__(self, video_folder, input_frames, transform=None):
-        self.video_folder = video_folder
+    def __init__(self, base_folder, input_frames, transform=None):
+        # Folders for each category
+        self.headshots_folder = os.path.join(base_folder, 'headshots')
+        self.shots_hit_folder = os.path.join(base_folder, 'shots_hit')
+        self.shots_missed_folder = os.path.join(base_folder, 'shots_missed')
+        self.spray_control_folder = os.path.join(base_folder, 'spray_control')
+
         self.transform = transform
-        self.video_files = [f for f in os.listdir(video_folder) if f.endswith('.mp4') or f.endswith('.webm')]
-        
-        # Assuming ground truth ratings for attributes are stored in the filenames
-        # Example filename format: video_hit_7_8_5.mp4 (7: shots hit, 8: shots missed)
-        self.labels = [self.extract_ratings(f) for f in self.video_files]
         self.input_frames = input_frames
 
-    def extract_ratings(self, filename):
-        # Assuming ratings are embedded in the filename as `video_hit_7_8_5.mp4`
-        parts = filename.split('_')
-        shots_hit = int(parts[-3])
-        shots_missed = int(parts[-2])
-        
-        # Calculate the derived attributes
+        # Load video files from each folder
+        self.headshot_files = [os.path.join(self.headshots_folder, f) for f in os.listdir(self.headshots_folder) if f.endswith('.mp4') or f.endswith('.webm')]
+        self.shots_hit_files = [os.path.join(self.shots_hit_folder, f) for f in os.listdir(self.shots_hit_folder) if f.endswith('.mp4') or f.endswith('.webm')]
+        self.shots_missed_files = [os.path.join(self.shots_missed_folder, f) for f in os.listdir(self.shots_missed_folder) if f.endswith('.mp4') or f.endswith('.webm')]
+        self.spray_control_files = [os.path.join(self.spray_control_folder, f) for f in os.listdir(self.spray_control_folder) if f.endswith('.mp4') or f.endswith('.webm')]
+
+        # Merge all video file paths into one list and associate each with a label
+        self.video_files = self.headshot_files + self.shots_hit_files + self.shots_missed_files + self.spray_control_files
+        self.labels = self.generate_labels()
+
+    def generate_labels(self):
+        labels = []
+        for _ in self.headshot_files:
+            labels.append(self.create_label(headshots=1, shots_hit=1, shots_missed=0, spray_control=1))
+        for _ in self.shots_hit_files:
+            labels.append(self.create_label(headshots=0, shots_hit=1, shots_missed=0, spray_control=1))
+        for _ in self.shots_missed_files:
+            labels.append(self.create_label(headshots=0, shots_hit=0, shots_missed=1, spray_control=1))
+        for _ in self.spray_control_files:
+            labels.append(self.create_label(headshots=0, shots_hit=1, shots_missed=0, spray_control=1))
+        return labels
+
+    def create_label(self, headshots, shots_hit, shots_missed, spray_control):
         shots_fired = shots_hit + shots_missed
         crosshair_placement = math.floor(shots_hit / shots_fired) if shots_fired > 0 else 0
-        
-        # Accuracy is the average of all attributes on a scale from 1 to 10
-        accuracy = (shots_hit + shots_missed + shots_fired + crosshair_placement) / 4
+        accuracy = (headshots + shots_hit + shots_missed + shots_fired + crosshair_placement) / 5
         accuracy = round(accuracy, 2)
-
-        # Convert to torch tensor
-        return torch.tensor([shots_hit, shots_missed, shots_fired, crosshair_placement, accuracy], dtype=torch.float32)
+        return torch.tensor([headshots, shots_hit, shots_missed, shots_fired, crosshair_placement, accuracy], dtype=torch.float32)
 
     def __len__(self):
         return len(self.video_files)
 
     def __getitem__(self, idx):
-        video_path = os.path.join(self.video_folder, self.video_files[idx])
+        video_path = self.video_files[idx]
         cap = cv2.VideoCapture(video_path)
 
         frames = []
@@ -109,13 +121,13 @@ input_frames = 16  # Number of frames to input to the model
 input_height = 240  # Height of each frame
 input_width = 320  # Width of each frame
 batch_size = 8
-num_ratings = 5  # Predict ratings for 5 attributes: shots hit, shots missed, shots fired, crosshair placement, accuracy
+num_ratings = 6  # Predict ratings for 6 attributes: headshots, shots hit, shots missed, shots fired, crosshair placement, accuracy
 
 # Initialize the model
 model = VideoRatingModel(num_ratings, input_frames, input_height, input_width).to(device)
 
 # Load dataset
-video_dataset = VideoDataset(video_folder='Dataset/missed', input_frames=input_frames)
+video_dataset = VideoDataset(base_folder='Dataset', input_frames=input_frames)
 dataloader = DataLoader(video_dataset, batch_size=batch_size, shuffle=True)
 
 # Loss function and optimizer
